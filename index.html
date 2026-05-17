@@ -65,11 +65,12 @@
 
     <!-- State C: 피드 (제출 후) -->
     <div id="state-feed" class="hidden">
-      <div class="feed-header">
-        <span class="feed-label">오늘의 답변</span>
-        <span id="feed-count" class="feed-count"></span>
+      <div class="feed-tabs">
+        <button id="tab-users" class="tab-btn tab-active">모두의 답변 <span id="feed-count" class="tab-count"></span></button>
+        <button id="tab-philosophers" class="tab-btn">철학자의 답변</button>
       </div>
-      <div id="feed-list"></div>
+      <div id="feed-users"></div>
+      <div id="feed-philosophers" class="hidden"></div>
     </div>
   </div>
 </main>

@@ -312,6 +312,71 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   padding: 1.5rem 0;
 }
 
+/* ── Feed tabs ─────────────────────────────────────────────── */
+
+.feed-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 0;
+  margin-bottom: -1px;
+  margin-right: 2rem;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--light);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.tab-btn:hover { color: var(--mid); }
+
+.tab-active {
+  color: var(--black);
+  border-bottom-color: var(--black);
+  font-weight: 400;
+}
+
+.tab-count {
+  font-size: 0.75rem;
+  color: var(--light);
+  margin-left: 0.35rem;
+}
+
+.tab-active .tab-count { color: var(--mid); }
+
+/* ── Philosopher feed items ─────────────────────────────────── */
+
+.philosopher-item {
+  padding: 1.5rem 0;
+}
+
+.philosopher-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.philosopher-name {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--dark);
+}
+
+.philosopher-era {
+  font-size: 0.76rem;
+  color: var(--light);
+}
+
 /* ── History page ──────────────────────────────────────────── */
 
 .page-title {

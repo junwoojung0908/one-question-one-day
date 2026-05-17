@@ -2,8 +2,9 @@ const _d = new Date();
 const TODAY = `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`;
 const PENDING_KEY = 'oqod_pending';
 
-let currentUser     = null;
-let currentQuestion = null;
+let currentUser        = null;
+let currentQuestion    = null;
+let philosopherAnswers = [];
 
 const $ = id => document.getElementById(id);
 
@@ -23,8 +24,11 @@ const elEmailInput    = $('email-input');
 const elMagicLinkBtn  = $('magic-link-btn');
 const elAuthMsg       = $('auth-msg');
 const elBackBtn       = $('back-btn');
-const elFeedList      = $('feed-list');
-const elFeedCount     = $('feed-count');
+const elFeedUsers        = $('feed-users');
+const elFeedPhilosophers = $('feed-philosophers');
+const elFeedCount        = $('feed-count');
+const elTabUsers         = $('tab-users');
+const elTabPhilosophers  = $('tab-philosophers');
 const elNavEmail      = $('nav-email');
 const elNavHistory    = $('nav-history');
 const elNavLogout     = $('nav-logout');
@@ -79,7 +83,8 @@ async function loadQuestion() {
   const q = questions.find(q => q.date === TODAY);
   if (!q) { hide(elLoading); show(elEmpty); return false; }
 
-  currentQuestion = { id: q.date, date: q.date, content: q.content };
+  currentQuestion    = { id: q.date, date: q.date, content: q.content };
+  philosopherAnswers = q.philosophers ?? [];
   elDateLabel.textContent = formatDate(TODAY);
   elQuestionText.textContent = q.content;
   hide(elLoading);
@@ -130,24 +135,51 @@ function showAuthState(draftContent) {
 
 async function showFeed() {
   hide(elStateAnswer); hide(elStateAuth);
+
+  // 사용자 답변 로드
   const { data: answers } = await db.from('answers').select('content, created_at')
     .eq('question_date', TODAY).order('created_at', { ascending: false });
 
-  elFeedList.innerHTML = '';
+  elFeedUsers.innerHTML = '';
   if (!answers || answers.length === 0) {
-    elFeedList.innerHTML = '<p class="feed-empty">아직 답변이 없습니다.</p>';
+    elFeedUsers.innerHTML = '<p class="feed-empty">아직 답변이 없습니다.</p>';
     elFeedCount.textContent = '';
   } else {
-    elFeedCount.textContent = `${answers.length}개`;
+    elFeedCount.textContent = answers.length;
     answers.forEach(a => {
       const item = document.createElement('div');
       item.className = 'feed-item';
       item.innerHTML = `
         <p class="feed-content">${escapeHtml(a.content)}</p>
         <span class="feed-time">${formatTime(a.created_at)}</span>`;
-      elFeedList.appendChild(item);
+      elFeedUsers.appendChild(item);
     });
   }
+
+  // 철학자 답변 렌더링
+  elFeedPhilosophers.innerHTML = '';
+  if (philosopherAnswers.length === 0) {
+    elFeedPhilosophers.innerHTML = '<p class="feed-empty">준비된 철학자 답변이 없습니다.</p>';
+  } else {
+    philosopherAnswers.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'feed-item philosopher-item';
+      item.innerHTML = `
+        <p class="feed-content">${escapeHtml(p.answer)}</p>
+        <span class="philosopher-meta">
+          <span class="philosopher-name">${escapeHtml(p.name)}</span>
+          <span class="philosopher-era">${escapeHtml(p.era)}</span>
+        </span>`;
+      elFeedPhilosophers.appendChild(item);
+    });
+  }
+
+  // 탭 초기화 (사용자 답변 탭 활성)
+  elTabUsers.classList.add('tab-active');
+  elTabPhilosophers.classList.remove('tab-active');
+  show(elFeedUsers);
+  hide(elFeedPhilosophers);
+
   show(elStateFeed);
 }
 
@@ -243,6 +275,20 @@ elBackBtn.addEventListener('click', () => {
       if (content) { elAnswerInput.value = content; elCharCount.textContent = content.length; }
     } catch (_) { /* ignore */ }
   }
+});
+
+elTabUsers.addEventListener('click', () => {
+  elTabUsers.classList.add('tab-active');
+  elTabPhilosophers.classList.remove('tab-active');
+  show(elFeedUsers);
+  hide(elFeedPhilosophers);
+});
+
+elTabPhilosophers.addEventListener('click', () => {
+  elTabPhilosophers.classList.add('tab-active');
+  elTabUsers.classList.remove('tab-active');
+  show(elFeedPhilosophers);
+  hide(elFeedUsers);
 });
 
 elNavLogout.addEventListener('click', async () => {
