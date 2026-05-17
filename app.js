@@ -29,9 +29,11 @@ const elFeedPhilosophers = $('feed-philosophers');
 const elFeedCount        = $('feed-count');
 const elTabUsers         = $('tab-users');
 const elTabPhilosophers  = $('tab-philosophers');
-const elNavEmail      = $('nav-email');
-const elNavHistory    = $('nav-history');
-const elNavLogout     = $('nav-logout');
+const elNavEmail         = $('nav-email');
+const elNavHistory       = $('nav-history');
+const elNavLogout        = $('nav-logout');
+const elFeedLoginPrompt  = $('feed-login-prompt');
+const elFeedLoginBtn     = $('feed-login-btn');
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -181,6 +183,13 @@ async function showFeed() {
   show(elFeedUsers);
   hide(elFeedPhilosophers);
 
+  // 로그인 프롬프트
+  if (currentUser) {
+    hide(elFeedLoginPrompt);
+  } else {
+    show(elFeedLoginPrompt);
+  }
+
   show(elStateFeed);
 }
 
@@ -227,7 +236,7 @@ elSubmitBtn.addEventListener('click', async () => {
     localStorage.setItem(PENDING_KEY, JSON.stringify({
       date: TODAY, questionId: currentQuestion?.id, content,
     }));
-    showAuthState(content);
+    await showFeed();
     return;
   }
 
@@ -290,6 +299,13 @@ elTabPhilosophers.addEventListener('click', () => {
   elTabUsers.classList.remove('tab-active');
   show(elFeedPhilosophers);
   hide(elFeedUsers);
+});
+
+elFeedLoginBtn.addEventListener('click', () => {
+  const raw = localStorage.getItem(PENDING_KEY);
+  let content = '';
+  try { if (raw) content = JSON.parse(raw).content || ''; } catch (_) {}
+  showAuthState(content);
 });
 
 elNavLogout.addEventListener('click', async () => {

@@ -443,6 +443,21 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   color: var(--light);
 }
 
+/* ── Feed login prompt ─────────────────────────────────────── */
+
+.feed-login-prompt {
+  margin-top: 2rem;
+  padding: 1.125rem 1.5rem;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--mid);
+}
+
 /* ── Misc ──────────────────────────────────────────────────── */
 
 .loading-text { font-size: 0.85rem; color: var(--light); }
