@@ -21,7 +21,7 @@ function formatDate(dateStr) {
   });
 }
 
-function renderHistory(answers) {
+async function renderHistory(answers) {
   hide(elLoading);
 
   if (!answers || answers.length === 0) {
