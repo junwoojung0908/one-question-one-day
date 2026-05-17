@@ -359,6 +359,15 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   padding: 1.5rem 0;
 }
 
+.philosopher-quote {
+  font-size: 0.975rem;
+  font-style: italic;
+  color: var(--dark);
+  line-height: 1.75;
+  margin-bottom: 0.6rem;
+  word-break: break-word;
+}
+
 .philosopher-meta {
   display: flex;
   align-items: baseline;

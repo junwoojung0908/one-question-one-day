@@ -165,6 +165,7 @@ async function showFeed() {
       const item = document.createElement('div');
       item.className = 'feed-item philosopher-item';
       item.innerHTML = `
+        ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
         <p class="feed-content">${escapeHtml(p.answer)}</p>
         <span class="philosopher-meta">
           <span class="philosopher-name">${escapeHtml(p.name)}</span>
