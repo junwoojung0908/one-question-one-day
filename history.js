@@ -29,9 +29,17 @@ function renderHistory(answers) {
     return;
   }
 
+  let questions = [];
+  try {
+    const res = await fetch('questions.json');
+    questions = await res.json();
+  } catch (_) { /* 질문 텍스트 없어도 날짜/답변은 표시 */ }
+
+  const questionMap = Object.fromEntries(questions.map(q => [q.date, q.content]));
+
   const groups = new Map();
   answers.forEach(row => {
-    const date = row.questions?.date ?? row.created_at.slice(0, 10);
+    const date = row.question_date ?? row.created_at.slice(0, 10);
     if (!groups.has(date)) groups.set(date, []);
     groups.get(date).push(row);
   });
@@ -41,8 +49,7 @@ function renderHistory(answers) {
     .map(([date, rows]) => {
       const cards = rows.map(row => `
         <div class="history-card">
-          <p class="history-question-text">${escapeHtml(row.questions?.content ?? '')}</p>
-          <hr class="history-divider">
+          ${questionMap[date] ? `<p class="history-question-text">${escapeHtml(questionMap[date])}</p><hr class="history-divider">` : ''}
           <p class="history-answer-text">${escapeHtml(row.content)}</p>
         </div>`).join('');
       return `
@@ -71,7 +78,7 @@ async function init() {
 
   const { data: answers, error } = await db
     .from('answers')
-    .select('id, content, created_at, questions ( date, content )')
+    .select('id, content, created_at, question_date')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 

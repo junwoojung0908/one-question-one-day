@@ -68,30 +68,36 @@ function updateAuthUI() {
 // ── Data ──────────────────────────────────────────────────────
 
 async function loadQuestion() {
-  const { data, error } = await db
-    .from('questions').select('*').eq('date', TODAY).maybeSingle();
+  let questions;
+  try {
+    const res = await fetch('questions.json?v=' + Date.now());
+    questions = await res.json();
+  } catch (_) {
+    hide(elLoading); show(elEmpty); return false;
+  }
 
-  if (error || !data) { hide(elLoading); show(elEmpty); return false; }
+  const q = questions.find(q => q.date === TODAY);
+  if (!q) { hide(elLoading); show(elEmpty); return false; }
 
-  currentQuestion = data;
+  currentQuestion = { id: q.date, date: q.date, content: q.content };
   elDateLabel.textContent = formatDate(TODAY);
-  elQuestionText.textContent = data.content;
+  elQuestionText.textContent = q.content;
   hide(elLoading);
   show(elQuestionWrap);
   return true;
 }
 
 async function hasAnsweredToday() {
-  if (!currentUser || !currentQuestion) return false;
+  if (!currentUser) return false;
   const { data } = await db.from('answers').select('id')
-    .eq('question_id', currentQuestion.id).eq('user_id', currentUser.id).maybeSingle();
+    .eq('question_date', TODAY).eq('user_id', currentUser.id).maybeSingle();
   return !!data;
 }
 
 async function submitAnswer(content) {
-  if (!currentQuestion || !currentUser) return;
+  if (!currentUser) return;
   const { error } = await db.from('answers').insert({
-    question_id: currentQuestion.id,
+    question_date: TODAY,
     user_id: currentUser.id,
     content: content.trim(),
   });
@@ -125,7 +131,7 @@ function showAuthState(draftContent) {
 async function showFeed() {
   hide(elStateAnswer); hide(elStateAuth);
   const { data: answers } = await db.from('answers').select('content, created_at')
-    .eq('question_id', currentQuestion.id).order('created_at', { ascending: false });
+    .eq('question_date', TODAY).order('created_at', { ascending: false });
 
   elFeedList.innerHTML = '';
   if (!answers || answers.length === 0) {
