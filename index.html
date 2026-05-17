@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 질문</title>
+  <meta name="description" content="매일 하나의 질문, 나만의 답변">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">one question one day</a>
+  <nav>
+    <span class="nav-email" id="nav-email"></span>
+    <a href="history.html" id="nav-history" class="hidden">내 답변</a>
+    <button id="nav-logout" class="btn-ghost hidden">로그아웃</button>
+  </nav>
+</header>
+
+<main>
+  <p id="date-label" class="date-label"></p>
+
+  <p id="state-loading" class="loading-text">질문을 불러오는 중…</p>
+  <p id="state-empty" class="no-question hidden">오늘의 질문을 준비 중입니다.</p>
+
+  <div id="question-wrap" class="hidden">
+    <h1 id="question-text" class="question"></h1>
+
+    <!-- State A: 답변 작성 -->
+    <div id="state-answer" class="answer-form hidden">
+      <textarea
+        id="answer-input"
+        placeholder="오늘의 질문에 답해보세요…"
+        rows="6"
+        maxlength="2000"
+      ></textarea>
+      <div class="form-footer">
+        <span class="char-count"><span id="char-count">0</span> / 2000</span>
+        <button id="submit-btn" class="btn-primary">제출하기</button>
+      </div>
+    </div>
+
+    <!-- State B: 이메일 인증 -->
+    <div id="state-auth" class="hidden">
+      <div class="auth-box">
+        <div>
+          <p class="answer-preview-label">작성한 답변</p>
+          <p id="answer-preview" class="answer-preview-text"></p>
+        </div>
+        <p class="auth-desc">
+          답변을 저장하려면 이메일 인증이 필요합니다.<br>
+          메일함의 링크를 클릭하면 답변이 자동으로 제출됩니다.
+        </p>
+        <div class="auth-row">
+          <input type="email" id="email-input" placeholder="이메일 주소" autocomplete="email">
+          <button id="magic-link-btn" class="btn-primary">인증 메일 받기</button>
+        </div>
+        <p id="auth-msg" class="auth-msg"></p>
+        <button id="back-btn" class="btn-text">← 답변 수정하기</button>
+      </div>
+    </div>
+
+    <!-- State C: 피드 (제출 후) -->
+    <div id="state-feed" class="hidden">
+      <div class="feed-header">
+        <span class="feed-label">오늘의 답변</span>
+        <span id="feed-count" class="feed-count"></span>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

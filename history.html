@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 답변 기록 — one question one day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">one question one day</a>
+  <nav>
+    <span class="nav-email" id="nav-email"></span>
+    <a href="index.html">오늘의 질문</a>
+    <button id="nav-logout" class="btn-ghost hidden">로그아웃</button>
+  </nav>
+</header>
+
+<main>
+  <h2 class="page-title">내 답변 기록</h2>
+  <p id="state-loading" class="loading-text">불러오는 중…</p>
+  <div id="content"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="history.js"></script>
+</body>
+</html>
