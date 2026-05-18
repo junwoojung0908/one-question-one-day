@@ -467,6 +467,13 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 
 .site-title { cursor: pointer; }
 
+.site-title-hint {
+  font-size: 0.7rem;
+  color: var(--light);
+  vertical-align: middle;
+  margin-left: 0.1em;
+}
+
 .modal-backdrop {
   display: none;
   position: fixed;
