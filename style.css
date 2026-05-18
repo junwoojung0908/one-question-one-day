@@ -463,6 +463,67 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .loading-text { font-size: 0.85rem; color: var(--light); }
 .no-question  { font-size: 0.95rem; color: var(--mid); }
 
+/* ── About modal ───────────────────────────────────────────── */
+
+.site-title { cursor: pointer; }
+
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-backdrop.modal-open { display: flex; }
+
+.modal-box {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 2.5rem 2.25rem 2rem;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--light);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.modal-close:hover { color: var(--black); }
+
+.modal-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--black);
+  margin-bottom: 1.5rem;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 0.925rem;
+  color: var(--mid);
+  line-height: 1.82;
+  font-weight: 300;
+}
+
 /* ── Responsive ────────────────────────────────────────────── */
 
 @media (max-width: 560px) {
