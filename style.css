@@ -470,15 +470,21 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .modal-backdrop {
   display: none;
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
   z-index: 100;
-  align-items: center;
-  justify-content: center;
   padding: 1.5rem;
+  box-sizing: border-box;
 }
 
-.modal-backdrop.modal-open { display: flex; }
+.modal-backdrop.modal-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .modal-box {
   background: var(--white);
