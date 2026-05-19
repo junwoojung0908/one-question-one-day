@@ -16,16 +16,21 @@
   <a class="site-title" href="index.html">one question one day?</a>
   <nav>
     <span class="nav-email" id="nav-email"></span>
-    <a href="history.html" id="nav-history" class="hidden">내 답변</a>
-    <button id="nav-logout" class="btn-ghost hidden">로그아웃</button>
+    <a href="history.html" id="nav-history" class="hidden" data-i18n="nav_history">내 답변</a>
+    <button id="nav-logout" class="btn-ghost hidden" data-i18n="nav_logout">로그아웃</button>
+    <div class="lang-switcher">
+      <button class="lang-btn" data-lang="ko">KO</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ja">JA</button>
+    </div>
   </nav>
 </header>
 
 <main>
   <p id="date-label" class="date-label"></p>
 
-  <p id="state-loading" class="loading-text">질문을 불러오는 중…</p>
-  <p id="state-empty" class="no-question hidden">오늘의 질문을 준비 중입니다.</p>
+  <p id="state-loading" class="loading-text" data-i18n="loading">질문을 불러오는 중…</p>
+  <p id="state-empty" class="no-question hidden" data-i18n="no_question">오늘의 질문을 준비 중입니다.</p>
 
   <div id="question-wrap" class="hidden">
     <h1 id="question-text" class="question"></h1>
@@ -34,13 +39,14 @@
     <div id="state-answer" class="answer-form hidden">
       <textarea
         id="answer-input"
+        data-i18n="answer_ph"
         placeholder="오늘의 질문에 답해보세요…"
         rows="6"
         maxlength="2000"
       ></textarea>
       <div class="form-footer">
         <span class="char-count"><span id="char-count">0</span> / 2000</span>
-        <button id="submit-btn" class="btn-primary">제출하기</button>
+        <button id="submit-btn" class="btn-primary" data-i18n="submit">제출하기</button>
       </div>
     </div>
 
@@ -48,33 +54,33 @@
     <div id="state-auth" class="hidden">
       <div class="auth-box">
         <div>
-          <p class="answer-preview-label">작성한 답변</p>
+          <p class="answer-preview-label" data-i18n="preview_label">작성한 답변</p>
           <p id="answer-preview" class="answer-preview-text"></p>
         </div>
-        <p class="auth-desc">
-          답변을 저장하려면 이메일 인증이 필요합니다.<br>
-          메일함의 링크를 클릭하면 답변이 자동으로 제출됩니다.
-        </p>
+        <div class="auth-desc">
+          <p data-i18n="auth_desc1">답변을 저장하려면 이메일 인증이 필요합니다.</p>
+          <p data-i18n="auth_desc2">메일함의 링크를 클릭하면 답변이 자동으로 제출됩니다.</p>
+        </div>
         <div class="auth-row">
-          <input type="email" id="email-input" placeholder="이메일 주소" autocomplete="email">
-          <button id="magic-link-btn" class="btn-primary">인증 메일 받기</button>
+          <input type="email" id="email-input" data-i18n="email_ph" placeholder="이메일 주소" autocomplete="email">
+          <button id="magic-link-btn" class="btn-primary" data-i18n="send_link">인증 메일 받기</button>
         </div>
         <p id="auth-msg" class="auth-msg"></p>
-        <button id="back-btn" class="btn-text">← 답변 수정하기</button>
+        <button id="back-btn" class="btn-text" data-i18n="back">← 답변 수정하기</button>
       </div>
     </div>
 
     <!-- State C: 피드 (제출 후) -->
     <div id="state-feed" class="hidden">
       <div class="feed-tabs">
-        <button id="tab-users" class="tab-btn tab-active">모두의 답변 <span id="feed-count" class="tab-count"></span></button>
-        <button id="tab-philosophers" class="tab-btn">철학자의 답변</button>
+        <button id="tab-users" class="tab-btn tab-active"><span data-i18n="tab_users">모두의 답변</span> <span id="feed-count" class="tab-count"></span></button>
+        <button id="tab-philosophers" class="tab-btn" data-i18n="tab_phil">철학자의 답변</button>
       </div>
       <div id="feed-users"></div>
       <div id="feed-philosophers" class="hidden"></div>
       <div id="feed-login-prompt" class="feed-login-prompt hidden">
-        <p>로그인하면 답변이 저장되고 내 기록을 볼 수 있어요.</p>
-        <button id="feed-login-btn" class="btn-text">로그인하기 →</button>
+        <p data-i18n="login_prompt">로그인하면 답변이 저장되고 내 기록을 볼 수 있어요.</p>
+        <button id="feed-login-btn" class="btn-text" data-i18n="login_btn">로그인하기 →</button>
       </div>
     </div>
   </div>
@@ -95,6 +101,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
+<script src="lang.js"></script>
 <script src="app.js"></script>
 <script src="about.js"></script>
 </body>

@@ -78,6 +78,29 @@ nav a {
 
 nav a:hover { color: var(--black); }
 
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 0.25rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--light);
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  letter-spacing: 0.04em;
+  transition: color 0.15s;
+}
+
+.lang-btn:hover    { color: var(--mid); }
+.lang-btn.lang-active { color: var(--black); font-weight: 500; }
+
 .btn-ghost {
   background: none;
   border: none;

@@ -19,13 +19,13 @@ function escapeHtml(str) {
 }
 
 function formatDate(dateStr) {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('ko-KR', {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString(getLocale(), {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   });
 }
 
 function formatTime(iso) {
-  return new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 const ADMIN_EMAIL = 'junwoojung0908@gmail.com';
@@ -58,7 +58,7 @@ async function renderAll() {
   hide(elLoading);
 
   if (error || !answers || answers.length === 0) {
-    elAllContent.innerHTML = '<p class="history-empty">아직 답변이 없습니다.</p>';
+    elAllContent.innerHTML = `<p class="history-empty">${t('all_empty')}</p>`;
     show(elAllContent);
     return;
   }
@@ -78,7 +78,7 @@ async function renderAll() {
           <p class="feed-content">${escapeHtml(row.content)}</p>
           <div class="feed-item-footer">
             <span class="feed-time">${formatTime(row.created_at)}</span>
-            ${isAdmin ? `<button class="admin-delete-btn" data-id="${row.id}">삭제</button>` : ''}
+            ${isAdmin ? `<button class="admin-delete-btn" data-id="${row.id}">${t('del_btn')}</button>` : ''}
           </div>
         </div>`).join('');
       return `
@@ -95,10 +95,10 @@ async function renderAll() {
   if (isAdmin) {
     elAllContent.querySelectorAll('.admin-delete-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (!confirm('이 답변을 삭제할까요?')) return;
+        if (!confirm(t('del_confirm'))) return;
         const id = btn.dataset.id;
         const { error } = await db.from('answers').delete().eq('id', id);
-        if (error) { alert('삭제 실패: ' + error.message); return; }
+        if (error) { alert(t('del_err') + error.message); return; }
         btn.closest('.feed-item').remove();
       });
     });
@@ -112,8 +112,8 @@ async function renderMine() {
   mineLoaded = true;
 
   if (!currentUser) {
-    elMineContent.innerHTML = `<p class="history-empty">로그인이 필요합니다.
-      <a href="index.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">오늘의 질문으로</a></p>`;
+    elMineContent.innerHTML = `<p class="history-empty">${t('login_req')}
+      <a href="index.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">${t('go_today')}</a></p>`;
     show(elMineContent);
     return;
   }
@@ -125,13 +125,13 @@ async function renderMine() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    elMineContent.innerHTML = '<p class="history-empty">불러오는 중 오류가 발생했습니다.</p>';
+    elMineContent.innerHTML = `<p class="history-empty">${t('load_err')}</p>`;
     show(elMineContent);
     return;
   }
 
   if (!answers || answers.length === 0) {
-    elMineContent.innerHTML = '<p class="history-empty">아직 답변한 질문이 없습니다.</p>';
+    elMineContent.innerHTML = `<p class="history-empty">${t('mine_empty')}</p>`;
     show(elMineContent);
     return;
   }

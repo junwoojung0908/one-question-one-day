@@ -49,11 +49,11 @@ function escapeHtml(str) {
 }
 
 function formatTime(iso) {
-  return new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDate(dateStr) {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('ko-KR', {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString(getLocale(), {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   });
 }
@@ -110,7 +110,7 @@ async function submitAnswer(content) {
   });
   // 23505 = unique violation (already answered) — treat as success
   if (error && error.code !== '23505') {
-    alert('답변 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    alert(t('save_err'));
     return false;
   }
   return true;
@@ -144,7 +144,7 @@ async function showFeed() {
 
   elFeedUsers.innerHTML = '';
   if (!answers || answers.length === 0) {
-    elFeedUsers.innerHTML = '<p class="feed-empty">아직 답변이 없습니다.</p>';
+    elFeedUsers.innerHTML = `<p class="feed-empty">${t('feed_empty')}</p>`;
     elFeedCount.textContent = '';
   } else {
     elFeedCount.textContent = answers.length;
@@ -161,7 +161,7 @@ async function showFeed() {
   // 철학자 답변 렌더링
   elFeedPhilosophers.innerHTML = '';
   if (philosopherAnswers.length === 0) {
-    elFeedPhilosophers.innerHTML = '<p class="feed-empty">준비된 철학자 답변이 없습니다.</p>';
+    elFeedPhilosophers.innerHTML = `<p class="feed-empty">${t('phil_empty')}</p>`;
   } else {
     philosopherAnswers.forEach(p => {
       const item = document.createElement('div');
@@ -227,7 +227,7 @@ elSubmitBtn.addEventListener('click', async () => {
   if (!content) { elAnswerInput.focus(); return; }
 
   elSubmitBtn.disabled = true;
-  elSubmitBtn.textContent = '제출 중…';
+  elSubmitBtn.textContent = t('submitting');
 
   const ok = await submitAnswer(content);
   if (ok) {
@@ -238,20 +238,20 @@ elSubmitBtn.addEventListener('click', async () => {
   }
 
   elSubmitBtn.disabled = false;
-  elSubmitBtn.textContent = '제출하기';
+  elSubmitBtn.textContent = t('submit');
 });
 
 elMagicLinkBtn.addEventListener('click', async () => {
   const email = elEmailInput.value.trim();
   if (!email) {
-    elAuthMsg.textContent = '이메일 주소를 입력해주세요.';
+    elAuthMsg.textContent = t('email_req');
     elAuthMsg.classList.add('error');
     elEmailInput.focus();
     return;
   }
 
   elMagicLinkBtn.disabled = true;
-  elMagicLinkBtn.textContent = '발송 중…';
+  elMagicLinkBtn.textContent = t('sending');
 
   const redirectTo = window.location.href.split('?')[0].split('#')[0];
   const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
@@ -260,14 +260,14 @@ elMagicLinkBtn.addEventListener('click', async () => {
     elAuthMsg.textContent = '오류: ' + error.message;
     elAuthMsg.classList.add('error');
     elMagicLinkBtn.disabled = false;
-    elMagicLinkBtn.textContent = '인증 메일 받기';
+    elMagicLinkBtn.textContent = t('send_link');
     return;
   }
 
   elEmailInput.disabled = true;
   elAuthMsg.classList.remove('error');
-  elAuthMsg.textContent = '인증 메일을 보냈습니다. 메일함에서 링크를 클릭하세요.';
-  elMagicLinkBtn.textContent = '발송 완료';
+  elAuthMsg.textContent = t('link_sent');
+  elMagicLinkBtn.textContent = t('sent');
 });
 
 elBackBtn.addEventListener('click', () => {
