@@ -545,9 +545,9 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 /* ── Pre-submit philosopher section ────────────────────────── */
 
 .pre-philosophers {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .pre-philosophers .philosopher-item {

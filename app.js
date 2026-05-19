@@ -133,8 +133,7 @@ async function submitAnswer(content) {
 function renderPrePhilosophers() {
   const el = $('pre-philosophers');
   if (!el || philosopherAnswers.length === 0) return;
-  el.innerHTML = `<p class="feed-section-label" data-i18n="tab_phil">${t('tab_phil')}</p>` +
-    philosopherAnswers.map(p => `
+  el.innerHTML = philosopherAnswers.map(p => `
       <div class="philosopher-item">
         ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
         <p class="feed-content">${escapeHtml(p.answer)}</p>
