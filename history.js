@@ -1,9 +1,12 @@
 const $ = id => document.getElementById(id);
 
-const elNavEmail  = $('nav-email');
-const elNavLogout = $('nav-logout');
-const elLoading   = $('state-loading');
-const elContent   = $('content');
+const elNavEmail    = $('nav-email');
+const elNavLogout   = $('nav-logout');
+const elLoading     = $('state-loading');
+const elTabAll      = $('tab-all');
+const elTabMine     = $('tab-mine');
+const elAllContent  = $('all-content');
+const elMineContent = $('mine-content');
 
 const show = el => el.classList.remove('hidden');
 const hide = el => el.classList.add('hidden');
@@ -21,21 +24,98 @@ function formatDate(dateStr) {
   });
 }
 
-async function renderHistory(answers) {
+function formatTime(iso) {
+  return new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+}
+
+let questionMap = {};
+let currentUser = null;
+let mineLoaded  = false;
+
+// ── 질문 로드 ─────────────────────────────────────────────────
+
+async function loadQuestions() {
+  try {
+    const res = await fetch('questions.json');
+    const list = await res.json();
+    questionMap = Object.fromEntries(list.map(q => [q.date, q.content]));
+  } catch (_) {}
+}
+
+// ── 전체 기록 렌더링 ──────────────────────────────────────────
+
+async function renderAll() {
+  const { data: answers, error } = await db
+    .from('answers')
+    .select('content, created_at, question_date')
+    .order('question_date', { ascending: false })
+    .order('created_at',    { ascending: false });
+
   hide(elLoading);
 
-  if (!answers || answers.length === 0) {
-    elContent.innerHTML = '<p class="history-empty">아직 답변한 질문이 없습니다.</p>';
+  if (error || !answers || answers.length === 0) {
+    elAllContent.innerHTML = '<p class="history-empty">아직 답변이 없습니다.</p>';
+    show(elAllContent);
     return;
   }
 
-  let questions = [];
-  try {
-    const res = await fetch('questions.json');
-    questions = await res.json();
-  } catch (_) { /* 질문 텍스트 없어도 날짜/답변은 표시 */ }
+  const groups = new Map();
+  answers.forEach(row => {
+    const date = row.question_date ?? row.created_at.slice(0, 10);
+    if (!groups.has(date)) groups.set(date, []);
+    groups.get(date).push(row);
+  });
 
-  const questionMap = Object.fromEntries(questions.map(q => [q.date, q.content]));
+  const html = [...groups.entries()]
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([date, rows]) => {
+      const items = rows.map(row => `
+        <div class="feed-item">
+          <p class="feed-content">${escapeHtml(row.content)}</p>
+          <span class="feed-time">${formatTime(row.created_at)}</span>
+        </div>`).join('');
+      return `
+        <div class="history-group">
+          <p class="history-date-label">${formatDate(date)}</p>
+          ${questionMap[date] ? `<p class="history-question-text">${escapeHtml(questionMap[date])}</p>` : ''}
+          <div class="history-feed">${items}</div>
+        </div>`;
+    }).join('');
+
+  elAllContent.innerHTML = html;
+  show(elAllContent);
+}
+
+// ── 내 기록 렌더링 ────────────────────────────────────────────
+
+async function renderMine() {
+  if (mineLoaded) return;
+  mineLoaded = true;
+
+  if (!currentUser) {
+    elMineContent.innerHTML = `<p class="history-empty">로그인이 필요합니다.
+      <a href="index.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">오늘의 질문으로</a></p>`;
+    show(elMineContent);
+    return;
+  }
+
+  const { data: answers, error } = await db
+    .from('answers')
+    .select('content, created_at, question_date')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    elMineContent.innerHTML = '<p class="history-empty">불러오는 중 오류가 발생했습니다.</p>';
+    show(elMineContent);
+    return;
+  }
+
+  if (!answers || answers.length === 0) {
+    elMineContent.innerHTML = '<p class="history-empty">아직 답변한 질문이 없습니다.</p>';
+    show(elMineContent);
+    return;
+  }
 
   const groups = new Map();
   answers.forEach(row => {
@@ -59,41 +139,46 @@ async function renderHistory(answers) {
         </div>`;
     }).join('');
 
-  elContent.innerHTML = html;
+  elMineContent.innerHTML = html;
+  show(elMineContent);
 }
 
-async function init() {
-  const { data: { session } } = await db.auth.getSession();
-  const user = session?.user ?? null;
+// ── 탭 전환 ───────────────────────────────────────────────────
 
-  if (!user) {
-    hide(elLoading);
-    elContent.innerHTML = `<p class="history-empty">로그인이 필요합니다.
-      <a href="index.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">오늘의 질문으로</a></p>`;
-    return;
-  }
+elTabAll.addEventListener('click', () => {
+  elTabAll.classList.add('tab-active');
+  elTabMine.classList.remove('tab-active');
+  show(elAllContent);
+  hide(elMineContent);
+});
 
-  elNavEmail.textContent = user.email;
-  show(elNavLogout);
+elTabMine.addEventListener('click', async () => {
+  elTabMine.classList.add('tab-active');
+  elTabAll.classList.remove('tab-active');
+  hide(elAllContent);
+  await renderMine();
+});
 
-  const { data: answers, error } = await db
-    .from('answers')
-    .select('id, content, created_at, question_date')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    hide(elLoading);
-    elContent.innerHTML = '<p class="history-empty">불러오는 중 오류가 발생했습니다.</p>';
-    return;
-  }
-
-  renderHistory(answers);
-}
+// ── 로그아웃 ──────────────────────────────────────────────────
 
 elNavLogout.addEventListener('click', async () => {
   await db.auth.signOut();
   window.location.href = 'index.html';
 });
+
+// ── Init ──────────────────────────────────────────────────────
+
+async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  currentUser = session?.user ?? null;
+
+  if (currentUser) {
+    elNavEmail.textContent = currentUser.email;
+    show(elNavLogout);
+  }
+
+  await loadQuestions();
+  await renderAll();
+}
 
 init();

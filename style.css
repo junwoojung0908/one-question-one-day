@@ -463,6 +463,15 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .loading-text { font-size: 0.85rem; color: var(--light); }
 .no-question  { font-size: 0.95rem; color: var(--mid); }
 
+/* ── History feed (전체 기록 내 답변 목록) ───────────────────── */
+
+.history-feed {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.history-feed .feed-item:first-child { border-top: none; }
+
 /* ── About modal ───────────────────────────────────────────── */
 
 .site-title { cursor: pointer; }

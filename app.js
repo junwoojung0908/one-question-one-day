@@ -1,6 +1,7 @@
 const _d = new Date();
 const TODAY = `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`;
-const PENDING_KEY = 'oqod_pending';
+const PENDING_KEY   = 'oqod_pending';
+const SUBMITTED_KEY = 'oqod_submitted';
 
 let currentUser        = null;
 let currentQuestion    = null;
@@ -102,18 +103,17 @@ async function hasAnsweredToday() {
 }
 
 async function submitAnswer(content) {
-  if (!currentUser) return;
   const { error } = await db.from('answers').insert({
     question_date: TODAY,
-    user_id: currentUser.id,
+    user_id: currentUser ? currentUser.id : null,
     content: content.trim(),
   });
   // 23505 = unique violation (already answered) — treat as success
   if (error && error.code !== '23505') {
     alert('답변 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
-    return;
+    return false;
   }
-  await showFeed();
+  return true;
 }
 
 // ── State transitions ─────────────────────────────────────────
@@ -204,6 +204,7 @@ async function init() {
   if (!hasQuestion) return;
 
   if (currentUser) {
+    // 로그인 후 리다이렉트 시 미제출 답변 처리
     const raw = localStorage.getItem(PENDING_KEY);
     if (raw) {
       try {
@@ -211,12 +212,18 @@ async function init() {
         if (pending.date === TODAY && pending.questionId === currentQuestion.id) {
           localStorage.removeItem(PENDING_KEY);
           await submitAnswer(pending.content);
+          await showFeed();
           return;
         }
       } catch (_) { /* ignore */ }
       localStorage.removeItem(PENDING_KEY);
     }
     if (await hasAnsweredToday()) { await showFeed(); return; }
+  } else {
+    // 익명 사용자가 오늘 이미 제출했으면 피드로
+    if (localStorage.getItem(SUBMITTED_KEY) === TODAY) {
+      await showFeed(); return;
+    }
   }
 
   showAnswerState();
@@ -232,17 +239,21 @@ elSubmitBtn.addEventListener('click', async () => {
   const content = elAnswerInput.value.trim();
   if (!content) { elAnswerInput.focus(); return; }
 
-  if (!currentUser) {
-    localStorage.setItem(PENDING_KEY, JSON.stringify({
-      date: TODAY, questionId: currentQuestion?.id, content,
-    }));
-    await showFeed();
-    return;
-  }
-
   elSubmitBtn.disabled = true;
   elSubmitBtn.textContent = '제출 중…';
-  await submitAnswer(content);
+
+  const ok = await submitAnswer(content);
+  if (ok) {
+    if (!currentUser) {
+      // 익명: 오늘 제출 표시 + 로그인 후 내 기록 연동용 저장
+      localStorage.setItem(SUBMITTED_KEY, TODAY);
+      localStorage.setItem(PENDING_KEY, JSON.stringify({
+        date: TODAY, questionId: currentQuestion?.id, content,
+      }));
+    }
+    await showFeed();
+  }
+
   elSubmitBtn.disabled = false;
   elSubmitBtn.textContent = '제출하기';
 });

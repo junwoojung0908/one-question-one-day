@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>내 답변 기록 — one question one day?</title>
+  <title>기록 — one question one day?</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,15 +21,21 @@
 </header>
 
 <main>
-  <h2 class="page-title">내 답변 기록</h2>
+  <div class="feed-tabs">
+    <button id="tab-all"  class="tab-btn tab-active">전체 기록</button>
+    <button id="tab-mine" class="tab-btn">내 기록</button>
+  </div>
+
   <p id="state-loading" class="loading-text">불러오는 중…</p>
-  <div id="content"></div>
+
+  <div id="all-content"  class="hidden"></div>
+  <div id="mine-content" class="hidden"></div>
 </main>
 
 <div id="about-modal" class="modal-backdrop">
   <div class="modal-box">
     <button id="about-close" class="modal-close" aria-label="닫기">×</button>
-    <h2 class="modal-title">one question one day?</h2>
+    <h2 class="modal-title">one? question? one? day?</h2>
     <div class="modal-body">
       <p>평소에도 생각이 많은 제가 생각을 기록해두면 좋겠다란 생각에 시작하게 된 미니 프로젝트입니다.</p>
       <p>하루에 하나씩 제법 생각해볼만한 질문을 던져주고, 답변을 기록합니다. 답변은 자세해도 되고, 즉흥적이어도 됩니다.</p>
