@@ -299,12 +299,30 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   word-break: break-word;
 }
 
-.feed-time {
-  display: block;
+.feed-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 0.5rem;
+}
+
+.feed-time {
   font-size: 0.76rem;
   color: var(--light);
 }
+
+.admin-delete-btn {
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  color: var(--light);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.admin-delete-btn:hover { color: #c0392b; }
 
 .feed-empty {
   font-size: 0.9rem;

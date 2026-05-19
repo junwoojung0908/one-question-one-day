@@ -28,6 +28,8 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }
 
+const ADMIN_EMAIL = 'junwoojung0908@gmail.com';
+
 let questionMap = {};
 let currentUser = null;
 let mineLoaded  = false;
@@ -45,9 +47,11 @@ async function loadQuestions() {
 // ── 전체 기록 렌더링 ──────────────────────────────────────────
 
 async function renderAll() {
+  const isAdmin = currentUser?.email === ADMIN_EMAIL;
+
   const { data: answers, error } = await db
     .from('answers')
-    .select('content, created_at, question_date')
+    .select('id, content, created_at, question_date')
     .order('question_date', { ascending: false })
     .order('created_at',    { ascending: false });
 
@@ -70,9 +74,12 @@ async function renderAll() {
     .sort(([a], [b]) => b.localeCompare(a))
     .map(([date, rows]) => {
       const items = rows.map(row => `
-        <div class="feed-item">
+        <div class="feed-item" data-id="${row.id}">
           <p class="feed-content">${escapeHtml(row.content)}</p>
-          <span class="feed-time">${formatTime(row.created_at)}</span>
+          <div class="feed-item-footer">
+            <span class="feed-time">${formatTime(row.created_at)}</span>
+            ${isAdmin ? `<button class="admin-delete-btn" data-id="${row.id}">삭제</button>` : ''}
+          </div>
         </div>`).join('');
       return `
         <div class="history-group">
@@ -84,6 +91,18 @@ async function renderAll() {
 
   elAllContent.innerHTML = html;
   show(elAllContent);
+
+  if (isAdmin) {
+    elAllContent.querySelectorAll('.admin-delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('이 답변을 삭제할까요?')) return;
+        const id = btn.dataset.id;
+        const { error } = await db.from('answers').delete().eq('id', id);
+        if (error) { alert('삭제 실패: ' + error.message); return; }
+        btn.closest('.feed-item').remove();
+      });
+    });
+  }
 }
 
 // ── 내 기록 렌더링 ────────────────────────────────────────────
