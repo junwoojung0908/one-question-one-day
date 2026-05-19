@@ -204,20 +204,7 @@ async function init() {
   if (!hasQuestion) return;
 
   if (currentUser) {
-    // 로그인 후 리다이렉트 시 미제출 답변 처리
-    const raw = localStorage.getItem(PENDING_KEY);
-    if (raw) {
-      try {
-        const pending = JSON.parse(raw);
-        if (pending.date === TODAY && pending.questionId === currentQuestion.id) {
-          localStorage.removeItem(PENDING_KEY);
-          await submitAnswer(pending.content);
-          await showFeed();
-          return;
-        }
-      } catch (_) { /* ignore */ }
-      localStorage.removeItem(PENDING_KEY);
-    }
+    localStorage.removeItem(PENDING_KEY); // 익명 재저장 방지: 그냥 제거
     if (await hasAnsweredToday()) { await showFeed(); return; }
   } else {
     // 익명 사용자가 오늘 이미 제출했으면 피드로
@@ -245,11 +232,7 @@ elSubmitBtn.addEventListener('click', async () => {
   const ok = await submitAnswer(content);
   if (ok) {
     if (!currentUser) {
-      // 익명: 오늘 제출 표시 + 로그인 후 내 기록 연동용 저장
-      localStorage.setItem(SUBMITTED_KEY, TODAY);
-      localStorage.setItem(PENDING_KEY, JSON.stringify({
-        date: TODAY, questionId: currentQuestion?.id, content,
-      }));
+      localStorage.setItem(SUBMITTED_KEY, TODAY); // 오늘 제출 표시
     }
     await showFeed();
   }
@@ -289,13 +272,6 @@ elMagicLinkBtn.addEventListener('click', async () => {
 
 elBackBtn.addEventListener('click', () => {
   showAnswerState();
-  const raw = localStorage.getItem(PENDING_KEY);
-  if (raw) {
-    try {
-      const { content } = JSON.parse(raw);
-      if (content) { elAnswerInput.value = content; elCharCount.textContent = content.length; }
-    } catch (_) { /* ignore */ }
-  }
 });
 
 elTabUsers.addEventListener('click', () => {
@@ -313,15 +289,11 @@ elTabPhilosophers.addEventListener('click', () => {
 });
 
 elFeedLoginBtn.addEventListener('click', () => {
-  const raw = localStorage.getItem(PENDING_KEY);
-  let content = '';
-  try { if (raw) content = JSON.parse(raw).content || ''; } catch (_) {}
-  showAuthState(content);
+  showAuthState('');
 });
 
 elNavLogout.addEventListener('click', async () => {
   await db.auth.signOut();
-  localStorage.removeItem(PENDING_KEY);
   window.location.reload();
 });
 
