@@ -1,24 +1,18 @@
 const $ = id => document.getElementById(id);
 
-const elNavEmail      = $('nav-email');
-const elNavLogout     = $('nav-logout');
-const elLoading       = $('state-loading');
-const elMineSection   = $('mine-section');
-const elMineContent   = $('mine-content');
-const elOthersWrap    = $('others-wrap');
-const elOthersToggle  = $('others-toggle');
-const elOthersTogTxt  = $('others-toggle-text');
-const elOthersContent = $('others-content');
+const elNavEmail    = $('nav-email');
+const elNavLogout   = $('nav-logout');
+const elLoading     = $('state-loading');
+const elMineSection = $('mine-section');
+const elMineContent = $('mine-content');
 
 const show = el => el.classList.remove('hidden');
 const hide = el => el.classList.add('hidden');
 
 const ADMIN_EMAIL = 'junwoojung0908@gmail.com';
 
-let questionMap  = {};
-let currentUser  = null;
-let othersLoaded = false;
-let othersOpen   = false;
+let questionMap = {};
+let currentUser = null;
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -45,7 +39,72 @@ async function loadQuestions() {
   } catch (_) {}
 }
 
-// ── 내 기록 ────────────────────────────────────────────────────
+// ── 질문별 전체 답변 토글 ─────────────────────────────────────
+
+function attachToggle(btn, date) {
+  const contentEl = btn.nextElementSibling; // .all-answers-content
+  const isAdmin   = currentUser?.email === ADMIN_EMAIL;
+  let loaded = false;
+  let open   = false;
+
+  btn.addEventListener('click', async () => {
+    if (!loaded) {
+      btn.textContent = '…';
+      btn.disabled = true;
+
+      let query = db.from('answers')
+        .select('id, content, created_at')
+        .eq('question_date', date)
+        .order('created_at', { ascending: false });
+
+      if (currentUser) query = query.neq('user_id', currentUser.id);
+
+      const { data: answers } = await query;
+      loaded = true;
+      btn.disabled = false;
+
+      if (!answers || answers.length === 0) {
+        contentEl.innerHTML = `<p class="feed-empty">${t('all_empty')}</p>`;
+      } else {
+        contentEl.innerHTML = answers.map(a => `
+          <div class="feed-item" data-id="${a.id}">
+            <p class="feed-content">${escapeHtml(a.content)}</p>
+            <div class="feed-item-footer">
+              <span class="feed-time">${formatTime(a.created_at)}</span>
+              ${isAdmin ? `<button class="admin-delete-btn" data-id="${a.id}">${t('del_btn')}</button>` : ''}
+            </div>
+          </div>`).join('');
+
+        if (isAdmin) {
+          contentEl.querySelectorAll('.admin-delete-btn').forEach(del => {
+            del.addEventListener('click', async () => {
+              if (!confirm(t('del_confirm'))) return;
+              const { error } = await db.from('answers').delete().eq('id', del.dataset.id);
+              if (error) { alert(t('del_err') + error.message); return; }
+              del.closest('.feed-item').remove();
+            });
+          });
+        }
+
+        // 버튼에 답변 수 표시
+        btn.dataset.count = answers.length;
+      }
+    }
+
+    open = !open;
+    if (open) {
+      show(contentEl);
+      const count = btn.dataset.count ? ` (${btn.dataset.count})` : '';
+      btn.innerHTML = `${t('all_ans_close')}${count} <span class="toggle-arrow">↑</span>`;
+    } else {
+      hide(contentEl);
+      const count = btn.dataset.count ? ` (${btn.dataset.count})` : '';
+      btn.innerHTML = `${t('all_ans_btn')}${count} <span class="toggle-arrow">↓</span>`;
+    }
+  });
+}
+
+// ── 내 기록 렌더링 ────────────────────────────────────────────
 
 async function renderMine() {
   if (!currentUser) {
@@ -73,6 +132,7 @@ async function renderMine() {
     return;
   }
 
+  // 날짜별 그룹
   const groups = new Map();
   answers.forEach(row => {
     const date = row.question_date ?? row.created_at.slice(0, 10);
@@ -80,98 +140,28 @@ async function renderMine() {
     groups.get(date).push(row);
   });
 
-  elMineContent.innerHTML = [...groups.entries()]
+  elMineContent.innerHTML = '';
+
+  [...groups.entries()]
     .sort(([a], [b]) => b.localeCompare(a))
-    .map(([date, rows]) => rows.map(row => `
-      <div class="history-card">
-        ${questionMap[date] ? `<p class="history-question-text">${escapeHtml(questionMap[date])}</p><hr class="history-divider">` : ''}
-        <p class="history-answer-text">${escapeHtml(row.content)}</p>
-        <span class="feed-time">${formatDate(date)}</span>
-      </div>`).join('')).join('');
+    .forEach(([date, rows]) => {
+      rows.forEach(row => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          ${questionMap[date] ? `<p class="history-question-text">${escapeHtml(questionMap[date])}</p><hr class="history-divider">` : ''}
+          <p class="history-answer-text">${escapeHtml(row.content)}</p>
+          <p class="history-date-label" style="margin-top:0.75rem">${formatDate(date)}</p>
+          <button class="all-answers-btn">${t('all_ans_btn')} <span class="toggle-arrow">↓</span></button>
+          <div class="all-answers-content hidden"></div>`;
+        elMineContent.appendChild(card);
+
+        attachToggle(card.querySelector('.all-answers-btn'), date);
+      });
+    });
 
   show(elMineSection);
 }
-
-// ── 다른 사람들의 답변 ─────────────────────────────────────────
-
-async function loadOthers() {
-  elOthersContent.innerHTML = `<p class="loading-text" style="padding:1rem 0">${t('others_loading')}</p>`;
-
-  const isAdmin = currentUser?.email === ADMIN_EMAIL;
-
-  let query = db.from('answers')
-    .select('id, content, created_at, question_date')
-    .order('question_date', { ascending: false })
-    .order('created_at',    { ascending: false });
-
-  // 로그인한 경우 본인 답변 제외
-  if (currentUser) query = query.neq('user_id', currentUser.id);
-
-  const { data: answers, error } = await query;
-
-  if (error || !answers || answers.length === 0) {
-    elOthersContent.innerHTML = `<p class="history-empty">${t('all_empty')}</p>`;
-    return;
-  }
-
-  const groups = new Map();
-  answers.forEach(row => {
-    const date = row.question_date ?? row.created_at.slice(0, 10);
-    if (!groups.has(date)) groups.set(date, []);
-    groups.get(date).push(row);
-  });
-
-  const html = [...groups.entries()]
-    .sort(([a], [b]) => b.localeCompare(a))
-    .map(([date, rows]) => {
-      const items = rows.map(row => `
-        <div class="feed-item" data-id="${row.id}">
-          <p class="feed-content">${escapeHtml(row.content)}</p>
-          <div class="feed-item-footer">
-            <span class="feed-time">${formatTime(row.created_at)}</span>
-            ${isAdmin ? `<button class="admin-delete-btn" data-id="${row.id}">${t('del_btn')}</button>` : ''}
-          </div>
-        </div>`).join('');
-      return `
-        <div class="history-group">
-          <p class="history-date-label">${formatDate(date)}</p>
-          ${questionMap[date] ? `<p class="history-question-text">${escapeHtml(questionMap[date])}</p>` : ''}
-          <div class="history-feed">${items}</div>
-        </div>`;
-    }).join('');
-
-  elOthersContent.innerHTML = html;
-
-  if (isAdmin) {
-    elOthersContent.querySelectorAll('.admin-delete-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        if (!confirm(t('del_confirm'))) return;
-        const { error } = await db.from('answers').delete().eq('id', btn.dataset.id);
-        if (error) { alert(t('del_err') + error.message); return; }
-        btn.closest('.feed-item').remove();
-      });
-    });
-  }
-
-  othersLoaded = true;
-}
-
-// ── 토글 ──────────────────────────────────────────────────────
-
-elOthersToggle.addEventListener('click', async () => {
-  if (!othersLoaded) await loadOthers();
-
-  othersOpen = !othersOpen;
-  if (othersOpen) {
-    show(elOthersContent);
-    elOthersTogTxt.textContent = t('others_close');
-    elOthersToggle.querySelector('.toggle-arrow').textContent = '↑';
-  } else {
-    hide(elOthersContent);
-    elOthersTogTxt.textContent = t('others_btn');
-    elOthersToggle.querySelector('.toggle-arrow').textContent = '↓';
-  }
-});
 
 // ── 로그아웃 ──────────────────────────────────────────────────
 
@@ -193,9 +183,7 @@ async function init() {
 
   await loadQuestions();
   await renderMine();
-
   hide(elLoading);
-  show(elOthersWrap);
 }
 
 init();
