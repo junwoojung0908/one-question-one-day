@@ -130,9 +130,25 @@ async function submitAnswer(content) {
 
 // ── State transitions ─────────────────────────────────────────
 
+function renderPrePhilosophers() {
+  const el = $('pre-philosophers');
+  if (!el || philosopherAnswers.length === 0) return;
+  el.innerHTML = `<p class="feed-section-label" data-i18n="tab_phil">${t('tab_phil')}</p>` +
+    philosopherAnswers.map(p => `
+      <div class="philosopher-item">
+        ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
+        <p class="feed-content">${escapeHtml(p.answer)}</p>
+        <span class="philosopher-meta">
+          <span class="philosopher-name">${escapeHtml(p.name)}</span>
+          <span class="philosopher-era">${escapeHtml(p.era)}</span>
+        </span>
+      </div>`).join('');
+}
+
 function showAnswerState() {
   hide(elStateAuth); hide(elStateFeed);
   show(elStateAnswer);
+  renderPrePhilosophers();
   elAnswerInput.focus();
 }
 

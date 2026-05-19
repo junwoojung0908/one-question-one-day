@@ -542,6 +542,24 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 
 .history-feed .feed-item:first-child { border-top: none; }
 
+/* ── Pre-submit philosopher section ────────────────────────── */
+
+.pre-philosophers {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.pre-philosophers .philosopher-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.85;
+}
+
+.pre-philosophers .philosopher-item:last-child {
+  border-bottom: none;
+}
+
 /* ── Toast ─────────────────────────────────────────────────── */
 
 .toast {
