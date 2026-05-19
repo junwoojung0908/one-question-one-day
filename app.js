@@ -20,6 +20,7 @@ const elStateFeed     = $('state-feed');
 const elAnswerInput   = $('answer-input');
 const elCharCount     = $('char-count');
 const elSubmitBtn     = $('submit-btn');
+const elAnswerCard    = $('answer-card');
 const elAnswerPreview = $('answer-preview');
 const elEmailInput    = $('email-input');
 const elMagicLinkBtn  = $('magic-link-btn');
@@ -104,6 +105,7 @@ async function loadQuestion() {
   elQuestionText.textContent = q.content;
   hide(elLoading);
   show(elQuestionWrap);
+  show(elAnswerCard);
   return true;
 }
 
@@ -132,7 +134,8 @@ async function submitAnswer(content) {
 
 function renderPrePhilosophers() {
   const el = $('pre-philosophers');
-  if (!el || philosopherAnswers.length === 0) return;
+  if (!el) return;
+  if (philosopherAnswers.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = philosopherAnswers.map(p => `
       <div class="philosopher-item">
         ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
@@ -146,13 +149,14 @@ function renderPrePhilosophers() {
 
 function showAnswerState() {
   hide(elStateAuth); hide(elStateFeed);
-  show(elStateAnswer);
   renderPrePhilosophers();
+  show(elAnswerCard);
+  show(elStateAnswer);
   elAnswerInput.focus();
 }
 
 function showAuthState(draftContent) {
-  hide(elStateAnswer); hide(elStateFeed);
+  hide(elStateAnswer); hide(elStateFeed); hide(elAnswerCard);
   elAnswerPreview.textContent = draftContent;
   elAuthMsg.textContent = '';
   elAuthMsg.classList.remove('error');
@@ -163,7 +167,7 @@ function showAuthState(draftContent) {
 }
 
 async function showFeed() {
-  hide(elStateAnswer); hide(elStateAuth);
+  hide(elStateAnswer); hide(elStateAuth); hide(elAnswerCard);
 
   // 사용자 답변 로드
   const { data: answers } = await db.from('answers').select('content, created_at')
