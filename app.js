@@ -28,8 +28,6 @@ const elBackBtn       = $('back-btn');
 const elFeedUsers        = $('feed-users');
 const elFeedPhilosophers = $('feed-philosophers');
 const elFeedCount        = $('feed-count');
-const elTabUsers         = $('tab-users');
-const elTabPhilosophers  = $('tab-philosophers');
 const elNavEmail         = $('nav-email');
 const elNavHistory       = $('nav-history');
 const elNavLogout        = $('nav-logout');
@@ -63,13 +61,27 @@ function formatDate(dateStr) {
 function updateAuthUI() {
   if (currentUser) {
     elNavEmail.textContent = currentUser.email;
-    show(elNavHistory);
     show(elNavLogout);
   } else {
     elNavEmail.textContent = '';
-    hide(elNavHistory);
     hide(elNavLogout);
   }
+}
+
+function showToast(msg) {
+  return new Promise(resolve => {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => el.classList.add('toast-show'));
+    });
+    setTimeout(() => {
+      el.classList.remove('toast-show');
+      setTimeout(() => { el.remove(); resolve(); }, 300);
+    }, 1400);
+  });
 }
 
 // ── Data ──────────────────────────────────────────────────────
@@ -177,12 +189,6 @@ async function showFeed() {
     });
   }
 
-  // 탭 초기화 (사용자 답변 탭 활성)
-  elTabUsers.classList.add('tab-active');
-  elTabPhilosophers.classList.remove('tab-active');
-  show(elFeedUsers);
-  hide(elFeedPhilosophers);
-
   // 로그인 프롬프트
   if (currentUser) {
     hide(elFeedLoginPrompt);
@@ -232,8 +238,9 @@ elSubmitBtn.addEventListener('click', async () => {
   const ok = await submitAnswer(content);
   if (ok) {
     if (!currentUser) {
-      localStorage.setItem(SUBMITTED_KEY, TODAY); // 오늘 제출 표시
+      localStorage.setItem(SUBMITTED_KEY, TODAY);
     }
+    await showToast(t('saved'));
     await showFeed();
   }
 
@@ -272,20 +279,6 @@ elMagicLinkBtn.addEventListener('click', async () => {
 
 elBackBtn.addEventListener('click', () => {
   showAnswerState();
-});
-
-elTabUsers.addEventListener('click', () => {
-  elTabUsers.classList.add('tab-active');
-  elTabPhilosophers.classList.remove('tab-active');
-  show(elFeedUsers);
-  hide(elFeedPhilosophers);
-});
-
-elTabPhilosophers.addEventListener('click', () => {
-  elTabPhilosophers.classList.add('tab-active');
-  elTabUsers.classList.remove('tab-active');
-  show(elFeedPhilosophers);
-  hide(elFeedUsers);
 });
 
 elFeedLoginBtn.addEventListener('click', () => {

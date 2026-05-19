@@ -16,7 +16,7 @@
   <a class="site-title" href="index.html">one question one day?</a>
   <nav>
     <span class="nav-email" id="nav-email"></span>
-    <a href="history.html" id="nav-history" class="hidden" data-i18n="nav_history">내 답변</a>
+    <a href="history.html" id="nav-history" data-i18n="nav_history">내 답변</a>
     <button id="nav-logout" class="btn-ghost hidden" data-i18n="nav_logout">로그아웃</button>
     <div class="lang-dropdown-wrap">
       <button class="lang-toggle" id="lang-toggle">🌐</button>
@@ -75,16 +75,17 @@
 
     <!-- State C: 피드 (제출 후) -->
     <div id="state-feed" class="hidden">
-      <div class="feed-tabs">
-        <button id="tab-users" class="tab-btn tab-active"><span data-i18n="tab_users">모두의 답변</span> <span id="feed-count" class="tab-count"></span></button>
-        <button id="tab-philosophers" class="tab-btn" data-i18n="tab_phil">철학자의 답변</button>
-      </div>
+      <p class="feed-section-label">
+        <span data-i18n="tab_users">모두의 답변</span><span id="feed-count" class="feed-count-badge"></span>
+      </p>
       <div id="feed-users"></div>
-      <div id="feed-philosophers" class="hidden"></div>
       <div id="feed-login-prompt" class="feed-login-prompt hidden">
         <p data-i18n="login_prompt">로그인하면 답변이 저장되고 내 기록을 볼 수 있어요.</p>
         <button id="feed-login-btn" class="btn-text" data-i18n="login_btn">로그인하기 →</button>
       </div>
+      <div class="feed-section-divider"></div>
+      <p class="feed-section-label" data-i18n="tab_phil">철학자의 답변</p>
+      <div id="feed-philosophers"></div>
     </div>
   </div>
 </main>

@@ -44,6 +44,7 @@
       email_req:      '이메일 주소를 입력해주세요.',
       link_sent:      '인증 메일을 보냈습니다. 메일함에서 링크를 클릭하세요.',
       save_err:       '답변 저장 중 오류가 발생했습니다. 다시 시도해주세요.',
+      saved:          '저장됐습니다 ✓',
     },
     en: {
       nav_history:    'My Answers',
@@ -87,6 +88,7 @@
       email_req:      'Please enter your email address.',
       link_sent:      'Magic link sent. Click the link in your inbox.',
       save_err:       'An error occurred. Please try again.',
+      saved:          'Saved ✓',
     },
     ja: {
       nav_history:    'マイ回答',
@@ -130,6 +132,7 @@
       email_req:      'メールアドレスを入力してください。',
       link_sent:      '認証メールを送りました。メールのリンクをクリックしてください。',
       save_err:       'エラーが発生しました。もう一度お試しください。',
+      saved:          '保存しました ✓',
     },
   };
 

@@ -542,6 +542,57 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 
 .history-feed .feed-item:first-child { border-top: none; }
 
+/* ── Toast ─────────────────────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0.75rem);
+  background: var(--black);
+  color: var(--white);
+  padding: 0.55rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 300;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 400;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.toast-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Feed sections (탭 제거 후) ─────────────────────────────── */
+
+.feed-section-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--light);
+  margin-bottom: 0.75rem;
+}
+
+.feed-count-badge {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--light);
+  margin-left: 0.4rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.feed-section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0 2rem;
+}
+
 /* ── History section ───────────────────────────────────────── */
 
 .history-section-label {
