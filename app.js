@@ -173,6 +173,7 @@ function showAuthState(draftContent) {
 
 async function showFeed() {
   hide(elStateAnswer); hide(elStateAuth); hide(elAnswerCard);
+  renderPrePhilosophers();
 
   // 사용자 답변 로드
   const { data: answers } = await db.from('answers').select('content, created_at')
