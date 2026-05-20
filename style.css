@@ -578,15 +578,15 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  width: 100px;
+  gap: 0.5rem;
+  width: 120px;
 }
 
 .phil-photo-wrap {
   position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 120px;
+  height: 160px;
+  border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
   flex-shrink: 0;
@@ -609,19 +609,18 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .phil-quote-overlay {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: rgba(17, 17, 17, 0.72);
+  background: rgba(17, 17, 17, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  padding: 0.75rem;
   opacity: 0;
   transition: opacity 0.35s ease;
   pointer-events: none;
 }
 
 .phil-photo-wrap:hover .phil-photo {
-  filter: blur(2px) brightness(0.6);
+  filter: blur(3px) brightness(0.5);
   transform: scale(1.05);
 }
 
@@ -630,18 +629,18 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 }
 
 .phil-quote-text {
-  font-size: 0.55rem;
-  line-height: 1.5;
+  font-size: 0.65rem;
+  line-height: 1.6;
   color: #fff;
   text-align: center;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
 }
 
 .phil-name {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 400;
   color: var(--dark);
   text-align: center;
