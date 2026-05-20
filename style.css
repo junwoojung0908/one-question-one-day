@@ -568,10 +568,9 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .philosopher-card-grid,
 .pre-philosophers,
 #feed-philosophers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .philosopher-card {
@@ -579,14 +578,13 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  width: 120px;
 }
 
 .phil-photo-wrap {
   position: relative;
-  width: 120px;
-  height: 160px;
-  border-radius: 6px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   flex-shrink: 0;
@@ -813,11 +811,19 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 
 /* ── Responsive ────────────────────────────────────────────── */
 
+@media (min-width: 560px) {
+  .philosopher-card-grid,
+  .pre-philosophers,
+  #feed-philosophers {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 560px) {
   header  { padding: 1.25rem 1.25rem; }
   main    { padding: 2.5rem 1.25rem 5rem; }
   .question { font-size: 1.25rem; }
-.auth-row { flex-direction: column; }
+  .auth-row { flex-direction: column; }
   .auth-row .btn-primary { align-self: flex-start; }
   .nav-email { display: none; }
 }
