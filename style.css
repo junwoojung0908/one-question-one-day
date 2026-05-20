@@ -173,22 +173,20 @@ main {
   margin-bottom: 0;
 }
 
-/* ── Answer card (question + form box) ─────────────────────── */
+/* ── Answer card (question + form, no box) ──────────────────── */
 
 .answer-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 2rem 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .answer-card .question {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 400;
-  letter-spacing: -0.01em;
-  color: var(--dark);
+  letter-spacing: -0.02em;
+  line-height: 1.65;
+  color: var(--black);
   margin-bottom: 0;
 }
 
@@ -741,8 +739,7 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   header  { padding: 1.25rem 1.25rem; }
   main    { padding: 2.5rem 1.25rem 5rem; }
   .question { font-size: 1.25rem; }
-  .answer-card { padding: 1.5rem 1.25rem 1.25rem; }
-  .auth-row { flex-direction: column; }
+.auth-row { flex-direction: column; }
   .auth-row .btn-primary { align-self: flex-start; }
   .nav-email { display: none; }
 }
