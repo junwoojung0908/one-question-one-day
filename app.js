@@ -136,15 +136,21 @@ function renderPrePhilosophers() {
   const el = $('pre-philosophers');
   if (!el) return;
   if (philosopherAnswers.length === 0) { el.innerHTML = ''; return; }
-  el.innerHTML = philosopherAnswers.map(p => `
-      <div class="philosopher-item">
-        ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
-        <p class="feed-content">${escapeHtml(p.answer)}</p>
-        <span class="philosopher-meta">
-          <span class="philosopher-name">${escapeHtml(p.name)}</span>
-          <span class="philosopher-era">${escapeHtml(p.era)}</span>
-        </span>
-      </div>`).join('');
+  el.innerHTML = philosopherAnswers.map(p => {
+    const photo = (window.PHILOSOPHER_PHOTOS || {})[p.name] || '';
+    const quoteHtml = p.quote ? escapeHtml(p.quote) : escapeHtml(p.answer);
+    return `
+      <div class="philosopher-card">
+        <div class="phil-photo-wrap${photo ? '' : ' phil-no-photo'}">
+          ${photo ? `<img class="phil-photo" src="${photo}" alt="${escapeHtml(p.name)}" loading="lazy">` : ''}
+          <div class="phil-quote-overlay">
+            <p class="phil-quote-text">${quoteHtml}</p>
+          </div>
+        </div>
+        <p class="phil-name">${escapeHtml(p.name)}</p>
+        <p class="phil-era">${escapeHtml(p.era)}</p>
+      </div>`;
+  }).join('');
 }
 
 function showAnswerState() {
@@ -195,15 +201,19 @@ async function showFeed() {
     elFeedPhilosophers.innerHTML = `<p class="feed-empty">${t('phil_empty')}</p>`;
   } else {
     philosopherAnswers.forEach(p => {
+      const photo = (window.PHILOSOPHER_PHOTOS || {})[p.name] || '';
+      const quoteHtml = p.quote ? escapeHtml(p.quote) : escapeHtml(p.answer);
       const item = document.createElement('div');
-      item.className = 'feed-item philosopher-item';
+      item.className = 'philosopher-card';
       item.innerHTML = `
-        ${p.quote ? `<p class="philosopher-quote">${escapeHtml(p.quote)}</p>` : ''}
-        <p class="feed-content">${escapeHtml(p.answer)}</p>
-        <span class="philosopher-meta">
-          <span class="philosopher-name">${escapeHtml(p.name)}</span>
-          <span class="philosopher-era">${escapeHtml(p.era)}</span>
-        </span>`;
+        <div class="phil-photo-wrap${photo ? '' : ' phil-no-photo'}">
+          ${photo ? `<img class="phil-photo" src="${photo}" alt="${escapeHtml(p.name)}" loading="lazy">` : ''}
+          <div class="phil-quote-overlay">
+            <p class="phil-quote-text">${quoteHtml}</p>
+          </div>
+        </div>
+        <p class="phil-name">${escapeHtml(p.name)}</p>
+        <p class="phil-era">${escapeHtml(p.era)}</p>`;
       elFeedPhilosophers.appendChild(item);
     });
   }

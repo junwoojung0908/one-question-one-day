@@ -559,20 +559,99 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 
 .history-feed .feed-item:first-child { border-top: none; }
 
-/* ── Pre-submit philosopher section ────────────────────────── */
+/* ── Philosopher photo grid ─────────────────────────────────── */
 
 .pre-philosophers {
   margin-bottom: 2rem;
 }
 
-.pre-philosophers .philosopher-item {
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--border);
-  opacity: 0.85;
+.philosopher-card-grid,
+.pre-philosophers,
+#feed-philosophers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  justify-content: center;
 }
 
-.pre-philosophers .philosopher-item:last-child {
-  border-bottom: none;
+.philosopher-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100px;
+}
+
+.phil-photo-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.phil-no-photo {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+}
+
+.phil-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+.phil-quote-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.phil-photo-wrap:hover .phil-photo {
+  filter: blur(2px) brightness(0.6);
+  transform: scale(1.05);
+}
+
+.phil-photo-wrap:hover .phil-quote-overlay {
+  opacity: 1;
+}
+
+.phil-quote-text {
+  font-size: 0.55rem;
+  line-height: 1.5;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+.phil-name {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--dark);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.phil-era {
+  font-size: 0.68rem;
+  color: var(--light);
+  text-align: center;
 }
 
 /* ── Toast ─────────────────────────────────────────────────── */
