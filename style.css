@@ -182,11 +182,11 @@ main {
 }
 
 .answer-card .question {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1.65;
-  color: var(--black);
+  color: var(--dark);
   margin-bottom: 0;
 }
 
@@ -235,7 +235,7 @@ textarea::placeholder { color: var(--light); }
 .btn-primary {
   display: inline-block;
   padding: 0.65rem 1.75rem;
-  background: var(--black);
+  background: var(--mid);
   color: var(--white);
   border: none;
   border-radius: 5px;
@@ -568,8 +568,9 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .philosopher-card-grid,
 .pre-philosophers,
 #feed-philosophers {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -578,6 +579,7 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  width: calc(50% - 0.5rem);
 }
 
 .phil-photo-wrap {
@@ -607,18 +609,21 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 .phil-quote-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(17, 17, 17, 0.78);
+  background: rgba(17, 17, 17, 0.82);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  gap: 0.6rem;
+  padding: 1rem 0.875rem;
   opacity: 0;
   transition: opacity 0.35s ease;
   pointer-events: none;
+  overflow-y: auto;
 }
 
 .phil-photo-wrap:hover .phil-photo {
-  filter: blur(3px) brightness(0.5);
+  filter: blur(3px) brightness(0.45);
   transform: scale(1.05);
 }
 
@@ -627,13 +632,27 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 }
 
 .phil-quote-text {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   line-height: 1.6;
   color: #fff;
   text-align: center;
+}
+
+.phil-quote-orig {
+  font-style: italic;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.72rem;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.phil-quote-kr {
+  color: #fff;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 
@@ -812,10 +831,8 @@ input[type="email"]:disabled     { background: var(--bg-subtle); color: var(--li
 /* ── Responsive ────────────────────────────────────────────── */
 
 @media (min-width: 560px) {
-  .philosopher-card-grid,
-  .pre-philosophers,
-  #feed-philosophers {
-    grid-template-columns: repeat(3, 1fr);
+  .philosopher-card {
+    width: calc(33.333% - 0.75rem);
   }
 }
 

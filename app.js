@@ -138,13 +138,13 @@ function renderPrePhilosophers() {
   if (philosopherAnswers.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = philosopherAnswers.map(p => {
     const photo = (window.PHILOSOPHER_PHOTOS || {})[p.name] || '';
-    const quoteHtml = p.quote ? escapeHtml(p.quote) : escapeHtml(p.answer);
     return `
       <div class="philosopher-card">
         <div class="phil-photo-wrap${photo ? '' : ' phil-no-photo'}">
           ${photo ? `<img class="phil-photo" src="${photo}" alt="${escapeHtml(p.name)}" loading="lazy">` : ''}
           <div class="phil-quote-overlay">
-            <p class="phil-quote-text">${quoteHtml}</p>
+            ${p.quote ? `<p class="phil-quote-text phil-quote-orig">${escapeHtml(p.quote)}</p>` : ''}
+            <p class="phil-quote-text phil-quote-kr">${escapeHtml(p.answer)}</p>
           </div>
         </div>
         <p class="phil-name">${escapeHtml(p.name)}</p>
@@ -202,14 +202,14 @@ async function showFeed() {
   } else {
     philosopherAnswers.forEach(p => {
       const photo = (window.PHILOSOPHER_PHOTOS || {})[p.name] || '';
-      const quoteHtml = p.quote ? escapeHtml(p.quote) : escapeHtml(p.answer);
       const item = document.createElement('div');
       item.className = 'philosopher-card';
       item.innerHTML = `
         <div class="phil-photo-wrap${photo ? '' : ' phil-no-photo'}">
           ${photo ? `<img class="phil-photo" src="${photo}" alt="${escapeHtml(p.name)}" loading="lazy">` : ''}
           <div class="phil-quote-overlay">
-            <p class="phil-quote-text">${quoteHtml}</p>
+            ${p.quote ? `<p class="phil-quote-text phil-quote-orig">${escapeHtml(p.quote)}</p>` : ''}
+            <p class="phil-quote-text phil-quote-kr">${escapeHtml(p.answer)}</p>
           </div>
         </div>
         <p class="phil-name">${escapeHtml(p.name)}</p>
