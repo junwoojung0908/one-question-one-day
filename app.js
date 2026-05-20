@@ -27,7 +27,6 @@ const elMagicLinkBtn  = $('magic-link-btn');
 const elAuthMsg       = $('auth-msg');
 const elBackBtn       = $('back-btn');
 const elFeedUsers        = $('feed-users');
-const elFeedPhilosophers = $('feed-philosophers');
 const elFeedCount        = $('feed-count');
 const elNavEmail         = $('nav-email');
 const elNavHistory       = $('nav-history');
@@ -192,29 +191,6 @@ async function showFeed() {
         <p class="feed-content">${escapeHtml(a.content)}</p>
         <span class="feed-time">${formatTime(a.created_at)}</span>`;
       elFeedUsers.appendChild(item);
-    });
-  }
-
-  // 철학자 답변 렌더링
-  elFeedPhilosophers.innerHTML = '';
-  if (philosopherAnswers.length === 0) {
-    elFeedPhilosophers.innerHTML = `<p class="feed-empty">${t('phil_empty')}</p>`;
-  } else {
-    philosopherAnswers.forEach(p => {
-      const photo = (window.PHILOSOPHER_PHOTOS || {})[p.name] || '';
-      const item = document.createElement('div');
-      item.className = 'philosopher-card';
-      item.innerHTML = `
-        <div class="phil-photo-wrap${photo ? '' : ' phil-no-photo'}">
-          ${photo ? `<img class="phil-photo" src="${photo}" alt="${escapeHtml(p.name)}" loading="lazy">` : ''}
-          <div class="phil-quote-overlay">
-            ${p.quote ? `<p class="phil-quote-text phil-quote-orig">${escapeHtml(p.quote)}</p>` : ''}
-            <p class="phil-quote-text phil-quote-kr">${escapeHtml(p.answer)}</p>
-          </div>
-        </div>
-        <p class="phil-name">${escapeHtml(p.name)}</p>
-        <p class="phil-era">${escapeHtml(p.era)}</p>`;
-      elFeedPhilosophers.appendChild(item);
     });
   }
 
