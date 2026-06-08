@@ -95,12 +95,14 @@ async function loadQuestion() {
     hide(elLoading); show(elEmpty); return false;
   }
 
-  const q = questions.find(q => q.date === TODAY);
-  if (!q) { hide(elLoading); show(elEmpty); return false; }
+  // 이번 주 질문: 오늘 이전 날짜 중 가장 최근 것
+  const released = questions.filter(q => q.date <= TODAY);
+  if (released.length === 0) { hide(elLoading); show(elEmpty); return false; }
+  const q = released.reduce((a, b) => a.date > b.date ? a : b);
 
   currentQuestion    = { id: q.date, date: q.date, content: q.content };
   philosopherAnswers = q.philosophers ?? [];
-  elDateLabel.textContent = formatDate(TODAY);
+  elDateLabel.textContent = formatDate(q.date);
   elQuestionText.textContent = q.content;
   hide(elLoading);
   show(elQuestionWrap);
@@ -111,13 +113,13 @@ async function loadQuestion() {
 async function hasAnsweredToday() {
   if (!currentUser) return false;
   const { data } = await db.from('answers').select('id')
-    .eq('question_date', TODAY).eq('user_id', currentUser.id).maybeSingle();
+    .eq('question_date', currentQuestion.date).eq('user_id', currentUser.id).maybeSingle();
   return !!data;
 }
 
 async function submitAnswer(content) {
   const { error } = await db.from('answers').insert({
-    question_date: TODAY,
+    question_date: currentQuestion.date,
     user_id: currentUser ? currentUser.id : null,
     content: content.trim(),
   });
@@ -177,7 +179,7 @@ async function showFeed() {
 
   // 사용자 답변 로드
   const { data: answers } = await db.from('answers').select('content, created_at')
-    .eq('question_date', TODAY).order('created_at', { ascending: false });
+    .eq('question_date', currentQuestion.date).order('created_at', { ascending: false });
 
   elFeedUsers.innerHTML = '';
   if (!answers || answers.length === 0) {
@@ -219,8 +221,8 @@ async function init() {
     localStorage.removeItem(PENDING_KEY); // 익명 재저장 방지: 그냥 제거
     if (await hasAnsweredToday()) { await showFeed(); return; }
   } else {
-    // 익명 사용자가 오늘 이미 제출했으면 피드로
-    if (localStorage.getItem(SUBMITTED_KEY) === TODAY) {
+    // 익명 사용자가 이번 주 질문 이미 제출했으면 피드로
+    if (localStorage.getItem(SUBMITTED_KEY) === currentQuestion.date) {
       await showFeed(); return;
     }
   }
@@ -244,7 +246,7 @@ elSubmitBtn.addEventListener('click', async () => {
   const ok = await submitAnswer(content);
   if (ok) {
     if (!currentUser) {
-      localStorage.setItem(SUBMITTED_KEY, TODAY);
+      localStorage.setItem(SUBMITTED_KEY, currentQuestion.date);
     }
     await showToast(t('saved'));
     await showFeed();
